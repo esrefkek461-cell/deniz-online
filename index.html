@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Deniz Online</title>
+
+<style>
+*{
+ box-sizing:border-box;
+ margin:0;
+ padding:0;
+ touch-action:none;
+}
+
+html,body{
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ font-family:Arial,sans-serif;
+ background:#071923;
+}
+
+canvas{
+ width:100vw;
+ height:100vh;
+ display:block;
+}
+
+/* ================= MENU ================= */
+
+.screen{
+ position:fixed;
+ inset:0;
+ z-index:100;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ background:
+ linear-gradient(rgba(0,25,45,.35),rgba(0,10,20,.82)),
+ #087da5;
+ color:white;
+}
+
+.logo{
+ font-size:clamp(38px,8vw,72px);
+ font-weight:900;
+ text-shadow:0 5px 15px #000;
+ text-align:center;
+}
+
+.subtitle{
+ margin:8px 0 25px;
+}
+
+.menuBtn{
+ width:min(300px,82vw);
+ padding:15px;
+ margin:6px;
+ border:0;
+ border-radius:15px;
+ background:white;
+ color:#075b7a;
+ font-size:20px;
+ font-weight:bold;
+ box-shadow:0 5px 15px #0005;
+}
+
+.menuBtn:active{
+ transform:scale(.95);
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+ position:fixed;
+ inset:0;
+ z-index:120;
+ display:none;
+ align-items:center;
+ justify-content:center;
+ background:#000b;
+ padding:12px;
+}
+
+.card{
+ position:relative;
+ width:min(500px,94vw);
+ max-height:94vh;
+ overflow-y:auto;
+ background:#f2dfb0;
+ color:#222;
+ border-radius:22px;
+ padding:20px;
+}
+
+.card h2{
+ text-align:center;
+ margin-bottom:12px;
+}
+
+.close{
+ position:absolute;
+ right:10px;
+ top:10px;
+ width:42px!important;
+ height:42px;
+ border:0;
+ border-radius:50%!important;
+ background:#c0392b!important;
+ color:white;
+ font-size:22px!important;
+ margin:0!important;
+}
+
+.preview{
+ width:110px;
+ height:130px;
+ margin:15px auto;
+ border-radius:15px;
+ background:#ddd;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+}
+
+.optionTitle{
+ font-weight:bold;
+ text-align:center;
+ margin-top:12px;
+}
+
+.options{
+ display:flex;
+ flex-wrap:wrap;
+ justify-content:center;
+ gap:8px;
+ margin-top:7px;
+}
+
+.colorBtn{
+ width:45px!important;
+ height:45px;
+ padding:0!important;
+ margin:0!important;
+ border:3px solid white!important;
+ border-radius:50%!important;
+}
+
+.nameInput{
+ width:100%;
+ padding:13px;
+ margin-top:7px;
+ border:2px solid #aaa;
+ border-radius:12px;
+ font-size:17px;
+}
+
+.bigBtn{
+ width:100%;
+ padding:13px;
+ margin-top:13px;
+ border:0;
+ border-radius:12px;
+ background:#1687ad;
+ color:white;
+ font-size:18px;
+ font-weight:bold;
+}
+
+/* ================= GAME UI ================= */
+
+#ui{
+ position:fixed;
+ top:10px;
+ left:10px;
+ right:10px;
+ z-index:5;
+ display:flex;
+ justify-content:space-between;
+ pointer-events:none;
+}
+
+.panel{
+ background:#0009;
+ color:white;
+ padding:8px 12px;
+ border-radius:12px;
+ font-size:14px;
+}
+
+/* ================= JOYSTICK ================= */
+
+#joystick{
+ position:fixed;
+ left:25px;
+ bottom:25px;
+ width:125px;
+ height:125px;
+ border-radius:50%;
+ background:#ffffff2b;
+ border:2px solid #ffffff66;
+ z-index:10;
+}
+
+#stick{
+ position:absolute;
+ left:33px;
+ top:33px;
+ width:55px;
+ height:55px;
+ border-radius:50%;
+ background:#ffffffaa;
+}
+
+/* ================= ACTIONS ================= */
+
+#buttons{
+ position:fixed;
+ right:20px;
+ bottom:25px;
+ display:flex;
+ gap:12px;
+ z-index:10;
+}
+
+.action{
+ width:65px;
+ height:65px;
+ display:none;
+ align-items:center;
+ justify-content:center;
+ border:2px solid #ffffff88;
+ border-radius:50%;
+ background:#0009;
+ color:white;
+ font-size:28px;
+}
+
+/* ================= MAP ================= */
+
+#map{
+ position:fixed;
+ right:12px;
+ top:55px;
+ width:145px;
+ height:105px;
+ border-radius:12px;
+ border:2px solid #ffffff88;
+ z-index:5;
+}
+
+/* ================= SHOP ================= */
+
+#shopScreen{
+ position:fixed;
+ inset:0;
+ z-index:80;
+ display:none;
+ align-items:center;
+ justify-content:center;
+ background:#000b;
+}
+
+.shop{
+ width:min(430px,90vw);
+ max-height:90vh;
+ overflow:auto;
+ background:#f2dfb0;
+ border-radius:20px;
+ padding:20px;
+ text-align:center;
+}
+
+.shop button{
+ width:100%;
+ padding:13px;
+ margin-top:9px;
+ border:0;
+ border-radius:12px;
+ font-size:17px;
+}
+
+.shopClose{
+ background:#c0392b;
+ color:white;
+}
+
+/* ================= ROTATE ================= */
+
+#rotate{
+ display:none;
+ position:fixed;
+ inset:0;
+ z-index:300;
+ background:#071923;
+ color:white;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ font-size:22px;
+ padding:30px;
+}
+
+@media(orientation:portrait){
+ #rotate{
+  display:flex;
+ }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= ANA MENÜ ================= -->
+
+<div id="menu" class="screen">
+
+ <div class="logo">🌊 DENİZ ONLINE</div>
+ <div class="subtitle">Deniz senin dünyan.</div>
+
+ <button class="menuBtn" onclick="openPlay()">
+  ▶️ OYNA
+ </button>
+
+ <button class="menuBtn" onclick="openCharacter()">
+  👤 KARAKTER
+ </button>
+
+ <button class="menuBtn" onclick="openSettings()">
+  ⚙️ AYARLAR
+ </button>
+
+</div>
+
+
+<!-- ================= OYNA ================= -->
+
+<div id="playModal" class="modal">
+
+ <div class="card">
+
+  <button class="close" onclick="closePlay()">✖</button>
+
+  <h2>🌊 Oyun Modu</h2>
+
+  <button class="bigBtn" onclick="startWorld('single')">
+   💰 SERVET
+   <br>
+   <small>Tek oyunculu dünya</small>
+  </button>
+
+  <button class="bigBtn" onclick="openServer()">
+   🌐 SERVER
+   <br>
+   <small>Online dünya</small>
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- ================= SERVER ================= -->
+
+<div id="serverModal" class="modal">
+
+ <div class="card">
+
+  <button class="close" onclick="closeServer()">✖</button>
+
+  <h2>🌐 SERVER</h2>
+
+  <p style="text-align:center;margin:15px 0">
+   Aynı ağdaki oyuncular için online sistem.
+  </p>
+
+  <button class="bigBtn" onclick="startWorld('server')">
+   🚢 SUNUCUYA GİR
+  </button>
+
+  <p style="text-align:center;margin-top:15px;font-size:13px">
+   ⚠️ Bu HTML sürümünde gerçek oyuncu bağlantısı
+   henüz aktif değil. Gerçek multiplayer için
+   WebSocket/WebRTC sunucusu ekleyeceğiz.
+  </p>
+
+ </div>
+
+</div>
+
+
+<!-- ================= KARAKTER ================= -->
+
+<div id="characterModal" class="modal">
+
+ <div class="card">
+
+  <button class="close" onclick="closeCharacter()">✖</button>
+
+  <h2>👤 Karakter Özelleştirme</h2>
+
+  <div class="preview" id="preview"></div>
+
+  <label><b>📝 Oyuncu Adı</b></label>
+
+  <input
+   id="nameInput"
+   class="nameInput"
+   maxlength="16"
+   placeholder="Oyuncu adın..."
+  >
+
+  <div class="optionTitle">
+   🎨 Ten Rengi
+  </div>
+
+  <div class="options">
+
+   <button class="colorBtn" style="background:#f2c29b"
+    onclick="setSkin('#f2c29b')"></button>
+
+   <button class="colorBtn" style="background:#d99a6c"
+    onclick="setSkin('#d99a6c')"></button>
+
+   <button class="colorBtn" style="background:#9b623f"
+    onclick="setSkin('#9b623f')"></button>
+
+   <button class="colorBtn" style="background:#6d432d"
+    onclick="setSkin('#6d432d')"></button>
+
+  </div>
+
+  <div class="optionTitle">
+   👕 Kıyafet
+  </div>
+
+  <div class="options">
+
+   <button class="colorBtn" style="background:#3498db"
+    onclick="setClothes('#3498db')"></button>
+
+   <button class="colorBtn" style="background:#e74c3c"
+    onclick="setClothes('#e74c3c')"></button>
+
+   <button class="colorBtn" style="background:#2ecc71"
+    onclick="setClothes('#2ecc71')"></button>
+
+   <button class="colorBtn" style="background:#9b59b6"
+    onclick="setClothes('#9b59b6')"></button>
+
+   <button class="colorBtn" style="background:#222"
+    onclick="setClothes('#222')"></button>
+
+  </div>
+
+  <div class="optionTitle">
+   💇 Saç
+  </div>
+
+  <div class="options">
+
+   <button class="colorBtn" style="background:#2c1b12"
+    onclick="setHair('#2c1b12')"></button>
+
+   <button class="colorBtn" style="background:#6b3515"
+    onclick="setHair('#6b3515')"></button>
+
+   <button class="colorBtn" style="background:#d8a432"
+    onclick="setHair('#d8a432')"></button>
+
+   <button class="colorBtn" style="background:#eee"
+    onclick="setHair('#eee')"></button>
+
+  </div>
+
+  <div class="optionTitle">
+   🧢 Şapka
+  </div>
+
+  <div class="options">
+
+   <button class="colorBtn"
+    style="background:#e74c3c"
+    onclick="setHat('#e74c3c')"></button>
+
+   <button class="colorBtn"
+    style="background:#3498db"
+    onclick="setHat('#3498db')"></button>
+
+   <button class="colorBtn"
+    style="background:#f1c40f"
+    onclick="setHat('#f1c40f')"></button>
+
+   <button class="colorBtn"
+    style="background:#222"
+    onclick="setHat('#222')"></button>
+
+   <button class="colorBtn"
+    style="background:#aaa"
+    onclick="setHat(null)">🚫</button>
+
+  </div>
+
+  <button class="bigBtn" onclick="saveCharacter()">
+   💾 KAYDET
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- ================= AYARLAR ================= -->
+
+<div id="settingsModal" class="modal">
+
+ <div class="card">
+
+  <button class="close" onclick="closeSettings()">✖</button>
+
+  <h2>⚙️ Ayarlar</h2>
+
+  <button class="bigBtn" onclick="toggleSound()">
+   🔊 Ses:
+   <span id="soundText">Açık</span>
+  </button>
+
+ </div>
+
+</div>
+
+
+<!-- ================= GAME ================= -->
+
+<canvas id="game"></canvas>
+
+<div id="ui">
+
+ <div class="panel">
+  🌊 DENİZ ONLINE
+ </div>
+
+ <div class="panel">
+  👤 <span id="playerNameUI">Oyuncu</span>
+  &nbsp; 💰 <span id="money">100</span> ₺
+ </div>
+
+</div>
+
+<canvas id="map"></canvas>
+
+<div id="joystick">
+ <div id="stick"></div>
+</div>
+
+<div id="buttons">
+
+ <button class="action" id="dockButton">⚓</button>
+ <button class="action" id="boatButton">🚤</button>
+ <button class="action" id="shopButton">☝️</button>
+
+</div>
+
+
+<!-- ================= SHOP ================= -->
+
+<div id="shopScreen">
+
+ <div class="shop">
+
+  <h2 id="shopTitle">🏪 Dükkan</h2>
+
+  <button onclick="buyFish()">
+   🐟 Balık Al - 10 ₺
+  </button>
+
+  <button onclick="sellFish()">
+   💰 Balık Sat +20 ₺
+  </button>
+
+  <button onclick="buyWood()">
+   🪵 Kereste Al - 15 ₺
+  </button>
+
+  <button onclick="buyGem()">
+   💎 Mücevher Al - 50 ₺
+  </button>
+
+  <button onclick="upgradeBoat()">
+   🚤 Tekne Geliştir - 100 ₺
+  </button>
+
+  <button class="shopClose" onclick="closeShop()">
+   ❌ Dükkandan Çık
+  </button>
+
+ </div>
+
+</div>
+
+
+<div id="rotate">
+ 📱<br><br>
+ Telefonunu yatay çevir.
+</div>
+
+
+<script>
+
+/* =================================================
+   MENÜ
+================================================= */
+
+let gameStarted=false;
+let soundEnabled=true;
+
+function openPlay(){
+ document.getElementById("playModal").style.display="flex";
+}
+
+function closePlay(){
+ document.getElementById("playModal").style.display="none";
+}
+
+function openServer(){
+ document.getElementById("playModal").style.display="none";
+ document.getElementById("serverModal").style.display="flex";
+}
+
+function closeServer(){
+ document.getElementById("serverModal").style.display="none";
+}
+
+function openCharacter(){
+ document.getElementById("characterModal").style.display="flex";
+ updatePreview();
+}
+
+function closeCharacter(){
+ document.getElementById("characterModal").style.display="none";
+}
+
+function openSettings(){
+ document.getElementById("settingsModal").style.display="flex";
+}
+
+function closeSettings(){
+ document.getElementById("settingsModal").style.display="none";
+}
+
+function toggleSound(){
+
+ soundEnabled=!soundEnabled;
+
+ document.getElementById("soundText").textContent=
+ soundEnabled ? "Açık" : "Kapalı";
+
+}
+
+
+/* =================================================
+   KARAKTER
+================================================= */
+
+const character={
+ name:"Oyuncu",
+ skin:"#f2c29b",
+ clothes:"#3498db",
+ hair:"#2c1b12",
+ hat:null
+};
+
+function setSkin(c){
+ character.skin=c;
+ updatePreview();
+}
+
+function setClothes(c){
+ character.clothes=c;
+ updatePreview();
+}
+
+function setHair(c){
+ character.hair=c;
+ updatePreview();
+}
+
+function setHat(c){
+ character.hat=c;
+ updatePreview();
+}
+
+function saveCharacter(){
+
+ let n=document.getElementById("nameInput").value.trim();
+
+ if(n.length>0)
+  character.name=n;
+
+ localStorage.setItem(
+  "denizCharacter",
+  JSON.stringify(character)
+ );
+
+ document.getElementById("playerNameUI").textContent=
+ character.name;
+
+ closeCharacter();
+
+}
+
+function loadCharacter(){
+
+ try{
+
+  const saved=
+   JSON.parse(
+    localStorage.getItem("denizCharacter")
+   );
+
+  if(saved){
+
+   Object.assign(character,saved);
+
+  }
+
+ }catch(e){}
+
+ document.getElementById("nameInput").value=
+ character.name;
+
+ document.getElementById("playerNameUI").textContent=
+ character.name;
+
+}
+
+function updatePreview(){
+
+ const p=document.getElementById("preview");
+
+ p.innerHTML="";
+
+ const body=document.createElement("div");
+
+ body.style.width="55px";
+ body.style.height="65px";
+ body.style.background=character.clothes;
+ body.style.borderRadius="12px";
+ body.style.position="relative";
+
+ const head=document.createElement("div");
+
+ head.style.position="absolute";
+ head.style.width="35px";
+ head.style.height="35px";
+ head.style.left="10px";
+ head.style.top="-20px";
+ head.style.borderRadius="50%";
+ head.style.background=character.skin;
+
+ const hair=document.createElement("div");
+
+ hair.style.position="absolute";
+ hair.style.width="36px";
+ hair.style.height="15px";
+ hair.style.left="9px";
+ hair.style.top="-22px";
+ hair.style.borderRadius="50% 50% 20% 20%";
+ hair.style.background=character.hair;
+
+ body.appendChild(head);
+ body.appendChild(hair);
+
+ if(character.hat){
+
+  const hat=document.createElement("div");
+
+  hat.style.position="absolute";
+  hat.style.width="42px";
+  hat.style.height="12px";
+  hat.style.left="6px";
+  hat.style.top="-28px";
+  hat.style.borderRadius="12px 12px 3px 3px";
+  hat.style.background=character.hat;
+
+  body.appendChild(hat);
+ }
+
+ p.appendChild(body);
+}
+
+
+/* =================================================
+   CANVAS
+================================================= */
+
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let W,H;
+
+function resize(){
+
+ W=innerWidth;
+ H=innerHeight;
+
+ canvas.width=W*devicePixelRatio;
+ canvas.height=H*devicePixelRatio;
+
+ canvas.style.width=W+"px";
+ canvas.style.height=H+"px";
+
+ ctx.setTransform(
+  devicePixelRatio,0,0,
+  devicePixelRatio,0,0
+ );
+
+}
+
+addEventListener("resize",resize);
+resize();
+
+
+/* =================================================
+   WORLD
+================================================= */
+
+const world={
+ width:8000,
+ height:8000
+};
+
+const player={
+ x:2500,
+ y:2500,
+ speed:3,
+ inBoat:false,
+ nearDock:false,
+ nearShop:false,
+ currentShop:null
+};
+
+const boat={
+ x:2500,
+ y:2660,
+ speed:6,
+ level:1,
+ capacity:10
+};
+
+const camera={
+ x:0,
+ y:0
+};
+
+
+/* =================================================
+   INVENTORY
+================================================= */
+
+let money=100;
+let fish=0;
+let wood=0;
+let gems=0;
+
+
+/* =================================================
+   ISLANDS
+================================================= */
+
+const islands=[
+
+ {x:2200,y:2200,w:650,h:500,name:"Başlangıç Adası"},
+ {x:900,y:900,w:650,h:400,name:"Balıkçı Adası"},
+ {x:3800,y:900,w:700,h:450,name:"Çöl Adası"},
+ {x:3900,y:3600,w:700,h:450,name:"Orman Adası"},
+ {x:900,y:3800,w:650,h:450,name:"Buz Adası"},
+ {x:6000,y:1800,w:750,h:500,name:"Volkan Adası"},
+ {x:6000,y:5200,w:700,h:450,name:"Korsan Adası"},
+ {x:2500,y:5800,w:650,h:400,name:"Hazine Adası"}
+
+];
+
+
+/* =================================================
+   DOCKS
+================================================= */
+
+const docks=[
+
+ {x:2525,y:2700},
+ {x:1225,y:1300},
+ {x:4150,y:1350},
+ {x:4250,y:4050},
+ {x:1225,y:4250},
+ {x:6375,y:2300},
+ {x:6375,y:5650},
+ {x:2825,y:6200}
+
+];
+
+
+/* =================================================
+   SHOPS
+================================================= */
+
+const shops=[
+
+ {x:2350,y:2500,name:"🐟 Balıkçı"},
+ {x:2650,y:2500,name:"⚓ Gemi Tersanesi"},
+ {x:2450,y:2600,name:"🏦 Banka"},
+ {x:2750,y:2600,name:"👕 Kıyafetçi"},
+
+ {x:1050,y:1150,name:"🎣 Balık Malzemeleri"},
+ {x:1350,y:1150,name:"🍖 Restoran"},
+
+ {x:4000,y:1150,name:"💎 Kuyumcu"},
+ {x:4300,y:1150,name:"🏠 Emlakçı"},
+
+ {x:4100,y:3900,name:"🪵 Keresteci"},
+ {x:4400,y:3900,name:"🗺️ Haritacı"},
+
+ {x:1100,y:4100,name:"🧊 Soğuk Depo"},
+ {x:1350,y:4100,name:"🥖 Fırın"},
+
+ {x:6200,y:2100,name:"⛏️ Maden"},
+ {x:6500,y:2100,name:"🛠️ Tamirci"},
+
+ {x:6200,y:5500,name:"🏴‍☠️ Korsan Pazarı"},
+ {x:6500,y:5500,name:"💰 Hazineci"},
+
+ {x:2650,y:6000,name:"🗿 Antika Dükkanı"}
+
+];
+
+
+/* =================================================
+   NPC
+================================================= */
+
+const npcs=[
+
+ {x:2550,y:2480,color:"#e74c3c",name:"Mert"},
+ {x:2670,y:2550,color:"#9b59b6",name:"Deniz"},
+ {x:1150,y:1150,color:"#f1c40f",name:"Efe"}
+
+];
+
+
+/* =================================================
+   PIRATES
+================================================= */
+
+const pirates=[
+
+ {x:5600,y:1800,dx:.5,dy:.2},
+ {x:5000,y:4700,dx:-.4,dy:.3},
+ {x:6800,y:3500,dx:.3,dy:-.4}
+
+];
+
+
+/* =================================================
+   JOYSTICK
+================================================= */
+
+const joystick=document.getElementById("joystick");
+const stick=document.getElementById("stick");
+
+let joyX=0,joyY=0,joyActive=false;
+
+function updateJoy(x,y){
+
+ const r=joystick.getBoundingClientRect();
+
+ const cx=r.left+r.width/2;
+ const cy=r.top+r.height/2;
+
+ let dx=x-cx;
+ let dy=y-cy;
+
+ const max=42;
+ const d=Math.hypot(dx,dy);
+
+ if(d>max){
+  dx=dx/d*max;
+  dy=dy/d*max;
+ }
+
+ joyX=dx/max;
+ joyY=dy/max;
+
+ stick.style.left=(33+dx)+"px";
+ stick.style.top=(33+dy)+"px";
+
+}
+
+function resetJoy(){
+
+ joyX=0;
+ joyY=0;
+
+ stick.style.left="33px";
+ stick.style.top="33px";
+
+}
+
+joystick.addEventListener("pointerdown",e=>{
+ joyActive=true;
+ joystick.setPointerCapture(e.pointerId);
+ updateJoy(e.clientX,e.clientY);
+});
+
+joystick.addEventListener("pointermove",e=>{
+ if(joyActive)
+  updateJoy(e.clientX,e.clientY);
+});
+
+joystick.addEventListener("pointerup",()=>{
+ joyActive=false;
+ resetJoy();
+});
+
+joystick.addEventListener("pointercancel",()=>{
+ joyActive=false;
+ resetJoy();
+});
+
+
+/* =================================================
+   KEYBOARD
+================================================= */
+
+const keys={};
+
+addEventListener("keydown",e=>{
+ keys[e.key.toLowerCase()]=true;
+});
+
+addEventListener("keyup",e=>{
+ keys[e.key.toLowerCase()]=false;
+});
+
+
+/* =================================================
+   BUTTONS
+================================================= */
+
+const dockButton=document.getElementById("dockButton");
+const boatButton=document.getElementById("boatButton");
+const shopButton=document.getElementById("shopButton");
+
+let dockX=0,dockY=0;
+
+
+/* TEKNEYE İN */
+
+dockButton.onclick=()=>{
+
+ if(player.inBoat && player.nearDock){
+
+  player.inBoat=false;
+  player.speed=3;
+
+  player.x=dockX;
+  player.y=dockY-60;
+
+ }
+
+};
+
+
+/* TEKNEYE DÖN */
+
+boatButton.onclick=()=>{
+
+ if(!player.inBoat && player.nearDock){
+
+  player.inBoat=true;
+  player.speed=boat.speed;
+
+  player.x=dockX;
+  player.y=dockY;
+
+ }
+
+};
+
+
+/* =================================================
+   NEARBY
+================================================= */
+
+function checkNearby(){
+
+ player.nearDock=false;
+ player.nearShop=false;
+ player.currentShop=null;
+
+ for(const d of docks){
+
+  const dist=Math.hypot(
+   player.x-d.x,
+   player.y-d.y
+  );
+
+  if(dist<160){
+
+   player.nearDock=true;
+   dockX=d.x;
+   dockY=d.y;
+   break;
+
+  }
+
+ }
+
+ for(const s of shops){
+
+  const dist=Math.hypot(
+   player.x-s.x,
+   player.y-s.y
+  );
+
+  if(dist<100){
+
+   player.nearShop=true;
+   player.currentShop=s;
+   break;
+
+  }
+
+ }
+
+ dockButton.style.display=
+  player.inBoat && player.nearDock
+  ? "flex":"none";
+
+ boatButton.style.display=
+  !player.inBoat && player.nearDock
+  ? "flex":"none";
+
+ shopButton.style.display=
+  !player.inBoat && player.nearShop
+  ? "flex":"none";
+
+}
+
+
+/* =================================================
+   SHOP
+================================================= */
+
+shopButton.onclick=()=>{
+
+ if(player.nearShop){
+
+  document.getElementById("shopTitle")
+   .textContent=player.currentShop.name;
+
+  document.getElementById("shopScreen")
+   .style.display="flex";
+
+ }
+
+};
+
+function closeShop(){
+ document.getElementById("shopScreen").style.display="none";
+}
+
+function updateMoney(){
+ document.getElementById("money").textContent=money;
+}
+
+function buyFish(){
+
+ if(money>=10){
+  money-=10;
+  fish++;
+  updateMoney();
+  alert("🐟 1 balık aldın!");
+ }
+
+}
+
+function sellFish(){
+
+ if(fish>0){
+  fish--;
+  money+=20;
+  updateMoney();
+  alert("💰 Balık sattın! +20 ₺");
+ }else{
+  alert("🐟 Satacak balığın yok.");
+ }
+
+}
+
+function buyWood(){
+
+ if(money>=15){
+  money-=15;
+  wood++;
+  updateMoney();
+  alert("🪵 Kereste aldın!");
+ }
+
+}
+
+function buyGem(){
+
+ if(money>=50){
+  money-=50;
+  gems++;
+  updateMoney();
+  alert("💎 Mücevher aldın!");
+ }
+
+}
+
+function upgradeBoat(){
+
+ if(money>=100){
+
+  money-=100;
+
+  boat.level++;
+  boat.speed++;
+  boat.capacity+=5;
+
+  updateMoney();
+
+  alert(
+   "🚤 Tekne geliştirildi!\n\n"+
+   "Seviye: "+boat.level+
+   "\nHız: "+boat.speed+
+   "\nKapasite: "+boat.capacity
+  );
+
+ }else{
+  alert("💰 Yeterli paran yok!");
+ }
+
+}
+
+
+/* =================================================
+   OYUN BAŞLAT
+================================================= */
+
+function startWorld(mode){
+
+ closePlay();
+ closeServer();
+
+ gameStarted=true;
+
+ document.getElementById("menu").style.display="none";
+
+ player.inBoat=false;
+ player.speed=3;
+
+ /* HER ZAMAN İNSAN OLARAK BAŞLA */
+
+ player.x=2500;
+ player.y=2500;
+
+ /* tekne yakında */
+
+ boat.x=2500;
+ boat.y=2660;
+
+ if(mode==="server"){
+
+  alert(
+   "🌐 SERVER\n\n"+
+   "Online sunucu sistemi için hazır!\n"+
+   "Şu an bağlantı altyapısını ekleyeceğiz."
+  );
+
+ }
+
+}
+
+
+/* =================================================
+   UPDATE
+================================================= */
+
+function update(){
+
+ if(!gameStarted) return;
+
+ let dx=joyX;
+ let dy=joyY;
+
+ if(keys["w"]||keys["arrowup"])dy=-1;
+ if(keys["s"]||keys["arrowdown"])dy=1;
+ if(keys["a"]||keys["arrowleft"])dx=-1;
+ if(keys["d"]||keys["arrowright"])dx=1;
+
+ player.x+=dx*player.speed;
+ player.y+=dy*player.speed;
+
+ player.x=Math.max(
+  50,
+  Math.min(world.width-50,player.x)
+ );
+
+ player.y=Math.max(
+  50,
+  Math.min(world.height-50,player.y)
+ );
+
+ if(player.inBoat){
+  boat.x=player.x;
+  boat.y=player.y;
+ }
+
+ camera.x=player.x-W/2;
+ camera.y=player.y-H/2;
+
+ camera.x=Math.max(
+  0,
+  Math.min(world.width-W,camera.x)
+ );
+
+ camera.y=Math.max(
+  0,
+  Math.min(world.height-H,camera.y)
+ );
+
+ checkNearby();
+
+ pirates.forEach(p=>{
+
+  p.x+=p.dx;
+  p.y+=p.dy;
+
+  if(p.x<500||p.x>7500)p.dx*=-1;
+  if(p.y<500||p.y>7500)p.dy*=-1;
+
+ });
+
+}
+
+
+/* =================================================
+   DRAW WATER
+================================================= */
+
+function drawWater(){
+
+ ctx.fillStyle="#1687ad";
+ ctx.fillRect(0,0,W,H);
+
+ ctx.strokeStyle="#ffffff24";
+ ctx.lineWidth=2;
+
+ for(let x=-camera.x%100;x<W;x+=100){
+
+  for(let y=-camera.y%80;y<H;y+=80){
+
+   ctx.beginPath();
+   ctx.arc(x,y,20,0,Math.PI);
+   ctx.stroke();
+
+  }
+
+ }
+
+}
+
+
+/* =================================================
+   DRAW ISLAND
+================================================= */
+
+function drawIsland(i){
+
+ const x=i.x-camera.x;
+ const y=i.y-camera.y;
+
+ ctx.fillStyle="#d8c27c";
+
+ ctx.beginPath();
+ ctx.roundRect(x,y,i.w,i.h,80);
+ ctx.fill();
+
+ ctx.fillStyle="#69b84e";
+
+ ctx.beginPath();
+ ctx.roundRect(
+  x+25,y+25,
+  i.w-50,i.h-50,
+  70
+ );
+ ctx.fill();
+
+ ctx.fillStyle="white";
+ ctx.font="bold 15px Arial";
+ ctx.textAlign="center";
+
+ ctx.fillText(
+  i.name,
+  x+i.w/2,
+  y+i.h/2
+ );
+
+}
+
+
+/* =================================================
+   DRAW DOCK
+================================================= */
+
+function drawDock(d){
+
+ const x=d.x-camera.x;
+ const y=d.y-camera.y;
+
+ ctx.fillStyle="#76512d";
+
+ ctx.fillRect(
+  x-70,y-20,140,110
+ );
+
+ ctx.strokeStyle="#4b301a";
+
+ for(let yy=y-10;yy<y+85;yy+=15){
+
+  ctx.beginPath();
+  ctx.moveTo(x-70,yy);
+  ctx.lineTo(x+70,yy);
+  ctx.stroke();
+
+ }
+
+ ctx.fillStyle="white";
+ ctx.font="28px Arial";
+
+ ctx.fillText("⚓",x,y-30);
+
+}
+
+
+/* =================================================
+   DRAW SHOP
+================================================= */
+
+function drawShop(s){
+
+ const x=s.x-camera.x;
+ const y=s.y-camera.y;
+
+ ctx.fillStyle="#9b572e";
+ ctx.fillRect(x-45,y-45,90,75);
+
+ ctx.fillStyle="#ead9ad";
+ ctx.fillRect(x-32,y-25,64,40);
+
+ ctx.fillStyle="white";
+ ctx.font="25px Arial";
+ ctx.textAlign="center";
+
+ ctx.fillText(
+  s.name.split(" ")[0],
+  x,y-55
+ );
+
+ ctx.font="12px Arial";
+
+ ctx.fillText(
+  s.name,
+  x,y+50
+ );
+
+}
+
+
+/* =================================================
+   DRAW NPC
+================================================= */
+
+function drawNPC(p){
+
+ const x=p.x-camera.x;
+ const y=p.y-camera.y;
+
+ ctx.fillStyle=p.color;
+
+ ctx.fillRect(x-11,y-2,22,25);
+
+ ctx.fillStyle="#f2c29b";
+
+ ctx.beginPath();
+ ctx.arc(x,y-13,12,0,Math.PI*2);
+ ctx.fill();
+
+ ctx.fillStyle="white";
+ ctx.font="12px Arial";
+
+ ctx.fillText(p.name,x,y-32);
+
+}
+
+
+/* =================================================
+   DRAW PIRATE
+================================================= */
+
+function drawPirate(p){
+
+ const x=p.x-camera.x;
+ const y=p.y-camera.y;
+
+ ctx.fillStyle="#222";
+
+ ctx.beginPath();
+ ctx.ellipse(x,y,42,18,0,0,Math.PI*2);
+ ctx.fill();
+
+ ctx.fillStyle="#ddd";
+ ctx.fillRect(x-2,y-35,4,35);
+
+ ctx.fillStyle="#111";
+
+ ctx.beginPath();
+ ctx.moveTo(x,y-35);
+ ctx.lineTo(x+30,y-15);
+ ctx.lineTo(x,y-15);
+ ctx.closePath();
+ ctx.fill();
+
+ ctx.fillStyle="white";
+ ctx.font="12px Arial";
+
+ ctx.fillText("🏴‍☠️",x,y+5);
+
+}
+
+
+/* =================================================
+   DRAW PLAYER
+================================================= */
+
+function drawPlayer(){
+
+ const x=player.x-camera.x;
+ const y=player.y-camera.y;
+
+ if(player.inBoat){
+
+  ctx.fillStyle="#8b5a2b";
+
+  ctx.beginPath();
+  ctx.ellipse(x,y+8,34,16,0,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="white";
+
+  ctx.beginPath();
+  ctx.moveTo(x,y-25);
+  ctx.lineTo(x+23,y+2);
+  ctx.lineTo(x,y+2);
+  ctx.closePath();
+  ctx.fill();
+
+ }else{
+
+  /* gölge */
+
+  ctx.fillStyle="#0004";
+
+  ctx.beginPath();
+  ctx.ellipse(
+   x,y+27,18,7,0,0,Math.PI*2
+  );
+  ctx.fill();
+
+  /* beden */
+
+  ctx.fillStyle=character.clothes;
+
+  ctx.fillRect(
+   x-12,y-2,24,28
+  );
+
+  /* kafa */
+
+  ctx.fillStyle=character.skin;
+
+  ctx.beginPath();
+  ctx.arc(x,y-15,13,0,Math.PI*2);
+  ctx.fill();
+
+  /* saç */
+
+  ctx.fillStyle=character.hair;
+
+  ctx.beginPath();
+  ctx.arc(
+   x,y-19,13,
+   Math.PI,Math.PI*2
+  );
+  ctx.fill();
+
+  /* şapka */
+
+  if(character.hat){
+
+   ctx.fillStyle=character.hat;
+
+   ctx.fillRect(
+    x-17,y-30,34,8
+   );
+
+   ctx.fillRect(
+    x-11,y-36,22,8
+   );
+
+  }
+
+ }
+
+ ctx.fillStyle="white";
+ ctx.font="12px Arial";
+ ctx.textAlign="center";
+
+ ctx.fillText(
+  character.name,
+  x,y-42
+ );
+
+}
+
+
+/* =================================================
+   MAP
+================================================= */
+
+const mapCanvas=document.getElementById("map");
+const mapCtx=mapCanvas.getContext("2d");
+
+mapCanvas.width=290;
+mapCanvas.height=210;
+
+function drawMap(){
+
+ mapCtx.fillStyle="#11789d";
+ mapCtx.fillRect(0,0,290,210);
+
+ islands.forEach(i=>{
+
+  mapCtx.fillStyle="#72b84f";
+
+  mapCtx.fillRect(
+   i.x/world.width*290,
+   i.y/world.height*210,
+   i.w/world.width*290,
+   i.h/world.height*210
+  );
+
+ });
+
+ docks.forEach(d=>{
+
+  mapCtx.fillStyle="white";
+
+  mapCtx.fillRect(
+   d.x/world.width*290-3,
+   d.y/world.height*210-3,
+   6,6
+  );
+
+ });
+
+ mapCtx.fillStyle="red";
+
+ mapCtx.beginPath();
+
+ mapCtx.arc(
+  player.x/world.width*290,
+  player.y/world.height*210,
+  5,0,Math.PI*2
+ );
+
+ mapCtx.fill();
+
+}
+
+
+/* =================================================
+   DRAW
+================================================= */
+
+function draw(){
+
+ drawWater();
+
+ islands.forEach(drawIsland);
+ docks.forEach(drawDock);
+ shops.forEach(drawShop);
+
+ npcs.forEach(drawNPC);
+ pirates.forEach(drawPirate);
+
+ drawPlayer();
+ drawMap();
+
+}
+
+
+/* =================================================
+   LOOP
+================================================= */
+
+function loop(){
+
+ update();
+ draw();
+
+ requestAnimationFrame(loop);
+
+}
+
+loadCharacter();
+loop();
+
+</script>
+</body>
+  </html>
