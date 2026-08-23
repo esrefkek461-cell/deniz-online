@@ -1,14 +1,38 @@
 const http = require("http");
+const fs = require("fs");
+const path = require("path");
 const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
-  res.writeHead(200, {
+  if (req.url === "/" || req.url === "/index.html") {
+    const filePath = path.join(__dirname, "index.html");
+
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        res.writeHead(500, {
+          "Content-Type": "text/plain; charset=utf-8"
+        });
+        res.end("index.html bulunamadı.");
+        return;
+      }
+
+      res.writeHead(200, {
+        "Content-Type": "text/html; charset=utf-8"
+      });
+
+      res.end(data);
+    });
+
+    return;
+  }
+
+  res.writeHead(404, {
     "Content-Type": "text/plain; charset=utf-8"
   });
 
-  res.end("🌊 DENİZ ONLINE SERVER AKTİF!");
+  res.end("404 - Sayfa bulunamadı");
 });
 
 const wss = new WebSocket.Server({ server });
@@ -33,11 +57,12 @@ function broadcast(data) {
 
 wss.on("connection", (ws) => {
 
-  const id =
-    Math.random().toString(36).substring(2, 10);
+  const id = Math.random()
+    .toString(36)
+    .substring(2, 10);
 
   const player = {
-    id: id,
+    id,
     name: "Oyuncu",
     x: 2500,
     y: 2500,
@@ -46,17 +71,15 @@ wss.on("connection", (ws) => {
 
   players.set(id, player);
 
-  // Yeni oyuncuya kendi bilgilerini gönder
   send(ws, {
     type: "welcome",
-    id: id,
+    id,
     players: Array.from(players.values())
   });
 
-  // Diğer oyunculara yeni oyuncuyu bildir
   broadcast({
     type: "playerJoined",
-    player: player
+    player
   });
 
   console.log("🌊 Oyuncu bağlandı:", id);
@@ -75,20 +98,16 @@ wss.on("connection", (ws) => {
 
     if (!current) return;
 
-    // Oyuncu hareketi
     if (data.type === "move") {
 
-      if (typeof data.x === "number") {
+      if (typeof data.x === "number")
         current.x = data.x;
-      }
 
-      if (typeof data.y === "number") {
+      if (typeof data.y === "number")
         current.y = data.y;
-      }
 
-      if (typeof data.inBoat === "boolean") {
+      if (typeof data.inBoat === "boolean")
         current.inBoat = data.inBoat;
-      }
 
       broadcast({
         type: "playerMoved",
@@ -96,42 +115,36 @@ wss.on("connection", (ws) => {
       });
     }
 
-    // İsim değiştirme
     if (data.type === "name") {
 
       if (typeof data.name === "string") {
 
-        current.name =
-          data.name
-            .trim()
-            .substring(0, 16);
+        current.name = data.name
+          .trim()
+          .substring(0, 16);
 
         broadcast({
           type: "playerUpdated",
           player: current
         });
-
       }
     }
 
-    // Sohbet
     if (data.type === "chat") {
 
       if (typeof data.text === "string") {
 
-        const text =
-          data.text
-            .trim()
-            .substring(0, 120);
+        const text = data.text
+          .trim()
+          .substring(0, 120);
 
         if (text.length > 0) {
 
           broadcast({
             type: "chat",
             name: current.name,
-            text: text
+            text
           });
-
         }
       }
     }
@@ -143,22 +156,17 @@ wss.on("connection", (ws) => {
 
     broadcast({
       type: "playerLeft",
-      id: id
+      id
     });
 
     console.log("👋 Oyuncu ayrıldı:", id);
   });
-
 });
 
 server.listen(PORT, "0.0.0.0", () => {
 
   console.log(
-    "🚤 DENİZ ONLINE SERVER ÇALIŞIYOR!"
-  );
-
-  console.log(
-    "Port:",
+    "🚤 DENİZ ONLINE SERVER ÇALIŞIYOR! Port:",
     PORT
   );
 
